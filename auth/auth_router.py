@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from db import engine, SessionLocal, Base
 import models
 import auth.auth_model as schema
-
+import auth.serviceMdp as service
 
 def get_db():
     db = SessionLocal()
@@ -23,7 +23,7 @@ def create_user(user: schema.UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Cet email est déjà enregistré")
     
     # Crée le nouvel utilisateur
-    new_user = models.User(nom=user.nom, prenom=user.prenom, email=user.email, telephone=user.telephone)
+    new_user = models.User(nom=user.nom, prenom=user.prenom, email=user.email, telephone=user.telephone, mdp=service.hash_password(user.mdp))
     db.add(new_user)
     db.commit()
     db.refresh(new_user)

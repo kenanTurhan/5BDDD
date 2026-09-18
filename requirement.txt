@@ -8,3 +8,6 @@ sqlalchemy
 oracledb 
 alembic 
 python-dotenv
+pydantic[email]
+pwdlib[argon2]
+

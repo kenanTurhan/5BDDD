@@ -6,6 +6,7 @@ class UserCreate(BaseModel):
     prenom: str
     email: EmailStr
     telephone: Optional[str] = None
+    mdp: str
 
 
 class User(UserCreate):

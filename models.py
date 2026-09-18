@@ -9,6 +9,7 @@ class User(Base):
     id = Column(Integer, Identity(), primary_key=True)
     nom = Column(String(100), nullable=False)
     prenom = Column(String(100), nullable=False)
+    mdp = Column(String(100), nullable=False)
     email = Column(String(100), unique=True, index=True, nullable=False)
     telephone = Column(String(20))
     role = Column(String(20), default="user") 
