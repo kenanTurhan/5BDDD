@@ -11,7 +11,7 @@ class User(Base):
     prenom = Column(String(100), nullable=False)
     email = Column(String(100), unique=True, index=True, nullable=False)
     telephone = Column(String(20))
-    role = Column(String(20), default="user") # Peut être "user" ou "admin"
+    role = Column(String(20), default="user") 
 
     emprunts = relationship("emprunts", back_populates="user")
 
