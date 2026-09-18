@@ -4,3 +4,7 @@ pydantic
 pytest
 datetime
 jwt
+sqlalchemy 
+oracledb 
+alembic 
+python-dotenv
