@@ -4,7 +4,7 @@ import jwt
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 from pwdlib import PasswordHash
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 
 router = APIRouter()
@@ -13,13 +13,8 @@ SECRET_KEY = "your_secret_key"
 algorithm = "HS256"
 TOKEN_EXPIRATION_MINUTES = 15
 
-password_hasher = PasswordHash.recommended()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+bearer_scheme = HTTPBearer()
 
-USER = {
-    "username": "alice",
-    "password": password_hasher.hash("secret"),
-}
 
 
 def create_token(username: str) -> str:
@@ -30,12 +25,11 @@ def create_token(username: str) -> str:
     return jwt.encode(payload, SECRET_KEY, algorithm=algorithm)
 
 
-def current_user(token: str = Depends(oauth2_scheme)) -> str:
+def current_user(credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme)):
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[algorithm])
-        username = payload.get("sub")
-        if username is None:
-            raise HTTPException(status_code=401, detail="Invalid token")
-        return username
-    except InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=[algorithm])
+        return payload["sub"]
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expiré")
+    except (jwt.InvalidTokenError, KeyError):
+        raise HTTPException(status_code=401, detail="Token invalide")

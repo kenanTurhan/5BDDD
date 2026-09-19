@@ -5,6 +5,8 @@ from db import engine, SessionLocal, Base
 import models
 import auth.auth_model as schema
 import auth.serviceMdp as service
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+
 from serviceJWT import create_token, current_user
 router = APIRouter(prefix= "/auth", tags=["Auth"])
 
@@ -32,15 +34,29 @@ def create_user(user: schema.UserCreate, db: Session = Depends(get_db)):
 
 
 @router.post("/login/")
-def login_user(email: str, password: str, db: Session = Depends(get_db)):
+# def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+#     db_user = db.query(models.User).filter(models.User.email == form_data.username).first()
+#     if not db_user:
+#         raise HTTPException(status_code=400, detail="Email ou mot de passe incorrect")
+
+#     if not service.verify_password(form_data.password, db_user.mdp):
+#         raise HTTPException(status_code=400, detail="Email ou mot de passe incorrect")
+#     token = create_token(form_data.username)
+#     return {"access_token": token, "token_type": "bearer"}
+
+
+def login_user(user: schema.UserLogin, db: Session = Depends(get_db)):
     #vérifie si le mail existe:
-    db_user = db.query(models.User).filter(models.User.email == email).first()
+    db_user = db.query(models.User).filter(models.User.email == user.email).first()
     if not db_user:
         raise HTTPException(status_code=400, detail="Email ou mot de passe incorrect")
-    
-    if not service.verify_password(password, db_user.mdp):
+
+    if not service.verify_password(user.mdp, db_user.mdp):
         raise HTTPException(status_code=400, detail="Email ou mot de passe incorrect")
 
-    #return db_user
-    #return token
     return create_token(db_user.email)
+
+
+@router.get("/me")
+def private_route(username: str = Depends(current_user)):
+    return {"message": f"Hello, {username}. This is a private route."}

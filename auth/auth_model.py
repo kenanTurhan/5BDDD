@@ -15,3 +15,8 @@ class User(UserCreate):
 
     class Config:
         from_attributes = True
+
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    mdp: str
