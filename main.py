@@ -7,6 +7,7 @@ import getpass
 
 import auth.auth_router as auth_router
 import admin.admin_router as admin_router
+import emprunt.emprunt_router as emprunt_router
 
 
 app = FastAPI()
@@ -19,3 +20,4 @@ def pageAccueil():
 
 app.include_router(auth_router.router)
 app.include_router(admin_router.router)
+app.include_router(emprunt_router.router)

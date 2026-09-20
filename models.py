@@ -33,7 +33,7 @@ class Book(Base):
 class emprunts(Base):
     __tablename__ = "emprunts"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, Identity(), primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     book_id = Column(Integer, ForeignKey("livres.id"), nullable=False)
 

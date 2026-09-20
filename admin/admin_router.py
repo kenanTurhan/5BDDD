@@ -18,36 +18,6 @@ def get_db():
         db.close()
 
 
-# @router.post("/users/", response_model=schema.User)
-# def create_user(user: schema.UserCreate, db: Session = Depends(get_db)):
-#     # Vérifie si l'email existe déjà
-#     db_user = db.query(models.User).filter(models.User.email == user.email).first()
-#     if db_user:
-#         raise HTTPException(status_code=400, detail="Cet email est déjà enregistré")
-    
-#     # Crée le nouvel utilisateur
-#     new_user = models.User(nom=user.nom, prenom=user.prenom, email=user.email, telephone=user.telephone, mdp=service.hash_password(user.mdp))
-#     db.add(new_user)
-#     db.commit()
-#     db.refresh(new_user)
-#     return new_user
-
-
-# @router.post("/login/")
-
-
-# def login_user(user: schema.UserLogin, db: Session = Depends(get_db)):
-#     #vérifie si le mail existe:
-#     db_user = db.query(models.User).filter(models.User.email == user.email).first()
-#     if not db_user:
-#         raise HTTPException(status_code=400, detail="Email ou mot de passe incorrect")
-
-#     if not service.verify_password(user.mdp, db_user.mdp):
-#         raise HTTPException(status_code=400, detail="Email ou mot de passe incorrect")
-
-#     return create_token(db_user.email)
-
-
 @router.get("/isAdmin")
 def private_route(username: str = Depends(current_user), db: Session = Depends(get_db)):
     db_user = db.query(models.User).filter(models.User.email == username, models.User.role == "admin").first()
