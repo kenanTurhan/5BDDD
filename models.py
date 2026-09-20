@@ -19,7 +19,7 @@ class User(Base):
 class Book(Base):
     __tablename__ = "livres"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, Identity(), primary_key=True)
     titre = Column(String(200), nullable=False, index=True)
     auteur = Column(String(100), nullable=False, index=True)
     genre = Column(String(50), index=True)

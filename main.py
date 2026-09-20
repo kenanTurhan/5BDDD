@@ -6,6 +6,7 @@ import oracledb
 import getpass
 
 import auth.auth_router as auth_router
+import admin.admin_router as admin_router
 
 
 app = FastAPI()
@@ -17,4 +18,4 @@ def pageAccueil():
     return { "Supinfo": "Bibliotheque" }
 
 app.include_router(auth_router.router)
-
+app.include_router(admin_router.router)

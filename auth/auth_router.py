@@ -34,15 +34,6 @@ def create_user(user: schema.UserCreate, db: Session = Depends(get_db)):
 
 
 @router.post("/login/")
-# def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-#     db_user = db.query(models.User).filter(models.User.email == form_data.username).first()
-#     if not db_user:
-#         raise HTTPException(status_code=400, detail="Email ou mot de passe incorrect")
-
-#     if not service.verify_password(form_data.password, db_user.mdp):
-#         raise HTTPException(status_code=400, detail="Email ou mot de passe incorrect")
-#     token = create_token(form_data.username)
-#     return {"access_token": token, "token_type": "bearer"}
 
 
 def login_user(user: schema.UserLogin, db: Session = Depends(get_db)):
@@ -60,3 +51,4 @@ def login_user(user: schema.UserLogin, db: Session = Depends(get_db)):
 @router.get("/me")
 def private_route(username: str = Depends(current_user)):
     return {"message": f"Hello, {username}. This is a private route."}
+
