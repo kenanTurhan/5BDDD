@@ -36,6 +36,6 @@ class emprunts(Base):
     id = Column(Integer, Identity(), primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     book_id = Column(Integer, ForeignKey("livres.id"), nullable=False)
-
+    rendu = Column(Boolean)
     user = relationship("User", back_populates="emprunts")
     book = relationship("Book", back_populates="emprunts")
