@@ -25,7 +25,7 @@ def emprunter(livreId:int, username: str = Depends(current_user), db: Session = 
         raise HTTPException(status_code=404, detail="L'utilisateur n'éxiste pas")
 
     db_livre = db.query(models.Book).filter(models.Book.id == livreId)
-    new_emprunt = models.emprunts(user_id=db_user.id, book_id=livreId)
+    new_emprunt = models.emprunts(user_id=db_user.id, book_id=livreId, rendu=False)
     db.add(new_emprunt)
     db.commit()
     #retirer un livre du nb disponible de la table book
@@ -41,7 +41,9 @@ def rendreLivre(empruntId:int, username: str = Depends(current_user), db: Sessio
         raise HTTPException(status_code=404, detail="Emprunt introuvable")
 
     livreId = db_emprunt.book_id
-    db.delete(db_emprunt)
+    # db.delete(db_emprunt)
+    db.query(models.emprunts).filter(models.emprunts.id == empruntId).update({"rendu": True})
+
     #ajouter un livre du nb disponible de la table book
     db.query(models.Book).filter(models.Book.id == livreId).update({"disponibles": models.Book.disponibles +1})
     db.commit()
