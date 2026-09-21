@@ -34,7 +34,7 @@ def emprunter(livreId:int, username: str = Depends(current_user), db: Session = 
 
     return(new_emprunt)
 
-@router.delete("/rendreLivre/{empruntId}")
+@router.patch("/rendreLivre/{empruntId}")
 def rendreLivre(empruntId:int, username: str = Depends(current_user), db: Session = Depends(get_db)):
     db_emprunt = db.query(models.emprunts).filter(models.emprunts.id == empruntId).first()
     if not db_emprunt:
