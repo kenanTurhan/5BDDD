@@ -5,11 +5,14 @@ from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 from pwdlib import PasswordHash
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+import dotenv
+import os
 
+dotenv.load_dotenv()
 
 router = APIRouter()
 
-SECRET_KEY = "your_secret_key"
+SECRET_KEY = os.getenv("SECRET_KEY")
 algorithm = "HS256"
 TOKEN_EXPIRATION_MINUTES = 15
 

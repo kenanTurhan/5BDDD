@@ -79,3 +79,10 @@ def promouvoirAdmin(user_id: int, username: str = Depends(current_user), db: Ses
     db.refresh(db_nvAdmin)
     return (db_nvAdmin)
 
+@router.get("/historique/{userId}")
+def getHistorique(userId: int, username: str = Depends(current_user), db: Session = Depends(get_db) ):
+    db_user = db.query(models.User).filter(models.User.email == username, models.User.role == "admin").all()
+    if not db_user:
+        raise HTTPException(status_code=400, detail="Cette action est réservé au bibliothequaires")
+    dbHistorique = db.query(models.emprunts).filter(models.emprunts.user_id == userId).first()
+    return dbHistorique
