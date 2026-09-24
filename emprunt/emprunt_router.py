@@ -6,6 +6,7 @@ import models
 import auth.auth_model as schema
 import auth.serviceMdp as service
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from sqlalchemy import or_
 
 from serviceJWT import create_token, current_user
 router = APIRouter(prefix= "/emprunt", tags=["emprunt"])
@@ -50,4 +51,15 @@ def rendreLivre(empruntId:int, username: str = Depends(current_user), db: Sessio
     return {"message": "Livre rendu"}
 
 
-    
+
+
+@router.get("/rechercher/{titre}")
+def rechercherLibre(titre: str, db: Session = Depends(get_db)):
+    db_livre = db.query(models.Book).filter(
+        or_(
+            models.Book.titre.ilike(titre),
+            models.Book.auteur.ilike(titre),
+            models.Book.genre.ilike(titre),
+        )
+    ).all()
+    return db_livre

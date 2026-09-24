@@ -65,16 +65,16 @@ def modifier_livre(livre_id: int, livre: schema.modifierLivre, username: str = D
 
 
 @router.patch("/promotion/{userID}")
-def promouvoirAdmin(user_id: int, username: str = Depends(current_user), db: Session = Depends(get_db)):
+def promouvoirAdmin(userID: int, username: str = Depends(current_user), db: Session = Depends(get_db)):
     db_user = db.query(models.User).filter(models.User.email == username, models.User.role == "admin").first()
     if not db_user:
         raise HTTPException(status_code=400, detail="Cette action est réservé au bibliothequaires")
     
-    db_nvAdmin = db.query(models.User).filter(models.User.id == user_id).first()
+    db_nvAdmin = db.query(models.User).filter(models.User.id == userID).first()
     if not db_nvAdmin:
         raise HTTPException(status_code=404, detail="L'utilisateur n'éxiste pas")
     
-    db.query(models.User).filter(models.User.id == user_id).update({"role": "admin"})
+    db.query(models.User).filter(models.User.id == userID).update({"role": "admin"})
     db.commit()
     db.refresh(db_nvAdmin)
     return (db_nvAdmin)
