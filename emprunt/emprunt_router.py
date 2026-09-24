@@ -25,7 +25,16 @@ def emprunter(livreId:int, username: str = Depends(current_user), db: Session = 
     if not db_user:
         raise HTTPException(status_code=404, detail="L'utilisateur n'éxiste pas")
 
-    db_livre = db.query(models.Book).filter(models.Book.id == livreId)
+    db_livre = db.query(models.Book).filter(models.Book.id == livreId).first()
+    if not db_livre: 
+        raise HTTPException(status_code=404, detail="livre pas trouvé")
+
+    #verifier disponibilité
+    if db_livre.disponibles < 1:
+        raise HTTPException(status_code=403, detail="Plus de stock")
+
+    
+
     new_emprunt = models.emprunts(user_id=db_user.id, book_id=livreId, rendu=False)
     db.add(new_emprunt)
     db.commit()
@@ -37,9 +46,9 @@ def emprunter(livreId:int, username: str = Depends(current_user), db: Session = 
 
 @router.patch("/rendreLivre/{empruntId}")
 def rendreLivre(empruntId:int, username: str = Depends(current_user), db: Session = Depends(get_db)):
-    db_emprunt = db.query(models.emprunts).filter(models.emprunts.id == empruntId).first()
+    db_emprunt = db.query(models.emprunts).filter(models.emprunts.id == empruntId, models.emprunts.rendu == False).first()
     if not db_emprunt:
-        raise HTTPException(status_code=404, detail="Emprunt introuvable")
+        raise HTTPException(status_code=404, detail="Emprunt déjà rendu")
 
     livreId = db_emprunt.book_id
     # db.delete(db_emprunt)
@@ -74,3 +83,9 @@ def getDetailLivre(idlivre:int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Aucun livre correspond à la recherche")
     else:
         return db_livre
+
+@router.get("/mesEmprunt/")
+def getMesEmprunt(username: str = Depends(current_user), db: Session = Depends(get_db) ):
+    idUser = db.query(models.User).filter(models.User.email == username).first()
+    empruntUser = db.query(models.emprunts).filter(models.emprunts.user_id == idUser.id).all()
+    return (empruntUser)

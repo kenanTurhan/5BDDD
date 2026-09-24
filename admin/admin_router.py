@@ -84,5 +84,17 @@ def getHistorique(userId: int, username: str = Depends(current_user), db: Sessio
     db_user = db.query(models.User).filter(models.User.email == username, models.User.role == "admin").all()
     if not db_user:
         raise HTTPException(status_code=400, detail="Cette action est réservé au bibliothequaires")
-    dbHistorique = db.query(models.emprunts).filter(models.emprunts.user_id == userId).first()
+    dbHistorique = db.query(models.emprunts).filter(models.emprunts.user_id == userId).all()
     return dbHistorique
+
+
+@router.delete("/supprimerLivre/{idlivre}")
+def supprimerLivre(idlivre:int, db : Session = Depends(get_db), username : str = Depends(current_user)):
+    dbAdmin = db.query(models.User).filter(models.User.email == username, models.User.role == "admin").first()
+    if not dbAdmin:
+        raise HTTPException(status_code=403, detail="Cette action est réservé au bibliothequaires.")
+    dbLivre = db.query(models.emprunts).filter(models.emprunts.book_id == idlivre, models.emprunts.rendu == False).first()
+    if dbLivre:
+        raise HTTPException(status_code=403, detail="Le livre est actuelement emprumpter")
+    db.query(models.Book).filter(models.Book.id == idlivre).delete()
+    db.commit()
