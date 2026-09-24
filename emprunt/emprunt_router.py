@@ -62,4 +62,15 @@ def rechercherLibre(titre: str, db: Session = Depends(get_db)):
             models.Book.genre.ilike(titre),
         )
     ).all()
+    if not db_livre :
+        raise HTTPException(status_code=404, detail="Aucun livre correspond à la recherche")
     return db_livre
+    
+
+@router.get("/detail/{idlivre}")
+def getDetailLivre(idlivre:int, db: Session = Depends(get_db)):
+    db_livre = db.query(models.Book).filter(models.Book.id == idlivre).first()
+    if db_livre is None:
+        raise HTTPException(status_code=404, detail="Aucun livre correspond à la recherche")
+    else:
+        return db_livre
