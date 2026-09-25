@@ -38,9 +38,10 @@ def emprunter(livreId:int, username: str = Depends(current_user), db: Session = 
     new_emprunt = models.emprunts(user_id=db_user.id, book_id=livreId, rendu=False)
     db.add(new_emprunt)
     db.commit()
-    #retirer un livre du nb disponible de la table book
+    
     db.query(models.Book).filter(models.Book.id == livreId).update({"disponibles": models.Book.disponibles -1})
     db.commit()
+    db.refresh(new_emprunt)
 
     return(new_emprunt)
 
