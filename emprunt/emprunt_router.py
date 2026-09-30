@@ -47,9 +47,16 @@ def emprunter(livreId:int, username: str = Depends(current_user), db: Session = 
 
 @router.patch("/rendreLivre/{empruntId}")
 def rendreLivre(empruntId:int, username: str = Depends(current_user), db: Session = Depends(get_db)):
+    db_user = db.query(models.User).filter(models.User.email == username).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="L'utilisateur n'éxiste pas")
+
     db_emprunt = db.query(models.emprunts).filter(models.emprunts.id == empruntId, models.emprunts.rendu == False).first()
     if not db_emprunt:
         raise HTTPException(status_code=404, detail="Emprunt déjà rendu")
+
+    if db_emprunt.user_id != db_user.id:
+        raise HTTPException(status_code=403, detail="Cet emprunt ne vous appartient pas")
 
     livreId = db_emprunt.book_id
     # db.delete(db_emprunt)
@@ -88,5 +95,11 @@ def getDetailLivre(idlivre:int, db: Session = Depends(get_db)):
 @router.get("/mesEmprunt/")
 def getMesEmprunt(username: str = Depends(current_user), db: Session = Depends(get_db) ):
     idUser = db.query(models.User).filter(models.User.email == username).first()
-    empruntUser = db.query(models.emprunts).filter(models.emprunts.user_id == idUser.id).all()
+    empruntUser = db.query(models.emprunts).filter(models.emprunts.user_id == idUser.id, models.emprunts.rendu == False).all()
+    return (empruntUser)
+
+@router.get("/historique/")
+def getMesEmprunt(username: str = Depends(current_user), db: Session = Depends(get_db) ):
+    idUser = db.query(models.User).filter(models.User.email == username).first()
+    empruntUser = db.query(models.emprunts).filter(models.emprunts.user_id == idUser.id, models.emprunts.rendu == True).all()
     return (empruntUser)

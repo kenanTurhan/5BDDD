@@ -98,3 +98,16 @@ def supprimerLivre(idlivre:int, db : Session = Depends(get_db), username : str =
         raise HTTPException(status_code=403, detail="Le livre est actuelement emprumpter")
     db.query(models.Book).filter(models.Book.id == idlivre).delete()
     db.commit()
+
+@router.delete("/users/{user_id}")
+def delete_user(user_id: int, username : str = Depends(current_user), db: Session = Depends(get_db)):
+    #verifier que je suis bien admin
+    db_user = db.query(models.User).filter(models.User.email == username, models.User.role == "admin").first()
+    if not db_user:
+        raise HTTPException(status_code=403, detail="Cette action est réservé au bibliothequaires.")
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+    db.delete(db_user)
+    db.commit()
+    return {"message": "Utilisateur supprimé avec succès"}
