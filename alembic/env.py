@@ -22,7 +22,6 @@ config.set_main_option("sqlalchemy.url", os.getenv("DATABASE_URL"))
 
 target_metadata = Base.metadata
 print(">>> Tables vues par Alembic :", list(target_metadata.tables.keys()))
-print(">>> URL :", os.getenv("DATABASE_URL"))
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

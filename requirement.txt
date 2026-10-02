@@ -2,8 +2,6 @@ fastapi
 uvicorn
 pydantic
 pytest
-datetime
-jwt
 sqlalchemy 
 oracledb 
 alembic 
@@ -11,3 +9,5 @@ python-dotenv
 pydantic[email]
 pwdlib[argon2]
 PyJWT
+python-multipart
+httpx
